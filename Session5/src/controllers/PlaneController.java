@@ -1,7 +1,9 @@
 package controllers;
 
 import models.Bullet;
+import models.GameConfig;
 import models.GameObject;
+import models.Plane;
 import utils.Utils;
 import views.GameView;
 
@@ -20,11 +22,11 @@ public class PlaneController extends SingleController {
     private int dy;
     public static final int SPEED = 10;
 
-    private Vector<BulletController> bulletControllers;
+    private ControllerManager bulletControllers;
 
-    public PlaneController(GameObject gameObject, GameView gameView) {
+    private PlaneController(GameObject gameObject, GameView gameView) {
         super(gameObject, gameView);
-        bulletControllers = new Vector<>();
+        bulletControllers = new ControllerManager();
     }
 
 //    public PlaneController(Plane plane, GameView planeView) {
@@ -76,10 +78,7 @@ public class PlaneController extends SingleController {
     @Override
     public void run() {
         gameObject.move(dx, dy);
-
-        for(BulletController bulletController : bulletControllers) {
-            bulletController.run();
-        }
+        bulletControllers.run();
     }
 
 
@@ -103,9 +102,7 @@ public class PlaneController extends SingleController {
     @Override
     public void draw(Graphics g) {
         super.draw(g);
-        for (BulletController bulletController : bulletControllers) {
-            bulletController.draw(g);
-        }
+        bulletControllers.draw(g);
     }
 
     //    public void draw(Graphics g){
@@ -119,4 +116,14 @@ public class PlaneController extends SingleController {
         gameObject.moveTo( e.getX() - (gameObject.getWidth() / 2),
                 e.getY() - (gameObject.getHeight() / 2));
     }
+
+    public final static PlaneController planeController = new PlaneController(
+                new Plane(GameConfig.instance.getScreenWidth() / 2, GameConfig.instance.getScreenHeight() - Plane.PLANE_HEIGHT),
+                new GameView(Utils.loadImageFromRes("plane3.png"))
+            );
+
+    public final static PlaneController planeController2 = new PlaneController(
+                new Plane(GameConfig.instance.getScreenWidth()  / 2, GameConfig.instance.getScreenHeight() - Plane.PLANE_HEIGHT),
+                new GameView(Utils.loadImageFromRes("plane4.png"))
+            );
 }

@@ -1,4 +1,5 @@
 import controllers.*;
+import models.GameConfig;
 import models.Plane;
 import utils.Utils;
 import views.GameView;
@@ -6,15 +7,11 @@ import views.GameView;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.util.Vector;
 
 /**
  * Created by apple on 10/2/16.
  */
 public class GameWindow extends Frame implements Runnable {
-
-    private static final int BACKGROUND_WIDTH = 600;
-    private static final int BACKGROUND_HEIGHT = 400;
 
     Image backgroundImage = null;
     Image backBufferImage;
@@ -22,38 +19,35 @@ public class GameWindow extends Frame implements Runnable {
     PlaneController planeController;
     PlaneController planeController2;
 
-//    Vector<EnemyPlaneController> enemyPlaneVector;
-//    Vector<EnemyBullet> enemyBulletVector;
+    int backgroundWidth;
+    int backgroundHeight;
 
-    private Vector<BaseController> controllers;
+    private ControllerManager controllerManager;
 
     public GameWindow() {
-        controllers = new Vector<>();
+        backgroundWidth = GameConfig.instance.getScreenWidth();
+        backgroundHeight = GameConfig.instance.getScreenHeight();
 
-        planeController = new PlaneController(
-                new Plane(BACKGROUND_WIDTH  / 2, BACKGROUND_HEIGHT - Plane.PLANE_HEIGHT),
-                new GameView(Utils.loadImageFromRes("plane3.png"))
+        controllerManager = new ControllerManager();
 
-        );
+        planeController = PlaneController.planeController;
+        planeController2 = PlaneController.planeController2;
 
-        planeController2 = new PlaneController(
-                new Plane(BACKGROUND_WIDTH  / 2, BACKGROUND_HEIGHT - Plane.PLANE_HEIGHT),
-                new GameView(Utils.loadImageFromRes("plane4.png"))
-        );
+        controllerManager.add(planeController);
+        controllerManager.add(planeController2);
+        controllerManager.add(new EnemyPlaneControllerManager());
+        controllerManager.add(CollisionPool.instance);
 
-        controllers.add(planeController);
-        controllers.add(planeController2);
-        controllers.add(new EnemyPlaneControllerManager());
-
-        backBufferImage = new BufferedImage(BACKGROUND_WIDTH,
-                BACKGROUND_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        backBufferImage = new BufferedImage(backgroundWidth,
+                backgroundHeight, BufferedImage.TYPE_INT_ARGB);
 
 
         Image enemyPlaneImage = Utils.loadImageFromRes("plane1.png");
 
 
         this.setVisible(true);
-        this.setSize(BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
+        this.setSize(GameConfig.instance.getScreenWidth(),
+                GameConfig.instance.getScreenHeight());
 
         this.addWindowListener(new WindowListener() {
             @Override
@@ -167,26 +161,24 @@ public class GameWindow extends Frame implements Runnable {
 
         backBufferGraphics.drawImage(backgroundImage,
                 0, 0,
-                BACKGROUND_WIDTH, BACKGROUND_HEIGHT, null);
+                backgroundWidth, backgroundHeight, null);
 
-        for (BaseController singleController : controllers) {
-            singleController.draw(backBufferGraphics);
-        }
+        controllerManager.draw(backBufferGraphics);
 
         g.drawImage(backBufferImage,
                 0, 0,
-                BACKGROUND_WIDTH, BACKGROUND_HEIGHT, null);
+                backgroundWidth, backgroundHeight, null);
     }
 
     @Override
     public void run() {
         while(true) {
             try {
-                Thread.sleep(17);
+                Thread.sleep(GameConfig
+                        .instance
+                        .getThreadDelayInMiliseconds());
                 repaint();
-                for(BaseController baseController : controllers) {
-                    baseController.run();
-                }
+                controllerManager.run();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

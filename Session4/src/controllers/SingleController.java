@@ -6,16 +6,20 @@ import views.GameView;
 /**
  * Created by apple on 10/11/16.
  */
-public class GameController {
+public class SingleController implements BaseController {
     private GameView gameView;
     protected GameObject gameObject;
 
-    public GameController(GameObject gameObject, GameView gameView) {
+    public SingleController(GameObject gameObject, GameView gameView) {
         this.gameView = gameView;
         this.gameObject = gameObject;
     }
 
     public void draw(Graphics g) {
         gameView.drawImage(g, gameObject);
+    }
+
+    public void run() {
+
     }
 }
