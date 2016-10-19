@@ -1,8 +1,6 @@
 package controllers;
 
-import models.Bullet;
-import models.GameConfig;
-import models.GameObject;
+import models.*;
 import utils.Utils;
 import views.GameView;
 
@@ -77,5 +75,32 @@ public class EnemyPlaneController extends SingleController implements Contactabl
         if(contactable instanceof BulletController) {
             ((BulletController) contactable).destroy();
         }
+    }
+
+    public static EnemyPlaneController create(int x, int y, EnemyPlaneType type) {
+
+        Image image = null;
+        FlyBehavior flyBehavior = null;
+        ShootBehavior shootBehavior = null;
+
+        if (type == EnemyPlaneType.GRAY) //Gray
+        {
+            image = Utils.loadImageFromRes("plane1.png");
+            flyBehavior = new DownFlyBehavior(1);
+            shootBehavior = new DownShootBehavior();
+        } else if (type == EnemyPlaneType.RED) // Red
+        {
+            image = Utils.loadImageFromRes("plane2.png");
+            flyBehavior = new DownRightFlyBehavior();
+        }
+        else if(type == EnemyPlaneType.YELLOW) {
+
+        }
+
+        return new EnemyPlaneController(
+                new EnemyPlane(x, y),
+                new GameView(image),
+                flyBehavior,
+                shootBehavior);
     }
 }
