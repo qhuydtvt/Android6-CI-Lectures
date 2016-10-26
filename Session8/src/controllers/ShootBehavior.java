@@ -1,5 +1,6 @@
 package controllers;
 
+import controllers.managers.ControllerManager;
 import models.GameObject;
 
 /**

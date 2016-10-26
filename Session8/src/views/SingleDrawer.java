@@ -8,11 +8,11 @@ import java.awt.*;
 /**
  * Created by apple on 10/11/16.
  */
-public class GameView extends GameDrawer{
+public class SingleDrawer extends GameDrawer{
 
     private Image image;
 
-    public GameView(Image image) {
+    public SingleDrawer(Image image) {
         this.image = image;
     }
 

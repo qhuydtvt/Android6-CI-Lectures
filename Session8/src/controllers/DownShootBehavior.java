@@ -1,9 +1,10 @@
 package controllers;
 
+import controllers.managers.ControllerManager;
 import models.EnemyBullet;
 import models.GameObject;
 import utils.Utils;
-import views.GameView;
+import views.SingleDrawer;
 
 /**
  * Created by apple on 10/18/16.
@@ -16,7 +17,7 @@ public class DownShootBehavior implements ShootBehavior {
 
         EnemyBulletController enemyBulletController = new EnemyBulletController(
                 new EnemyBullet(gameObject.getX(), gameObject.getY()),
-                new GameView(Utils.loadImageFromRes("enemy_bullet.png")),
+                new SingleDrawer(Utils.loadImageFromRes("enemy_bullet.png")),
                 new DownFlyBehavior(5)
         );
 

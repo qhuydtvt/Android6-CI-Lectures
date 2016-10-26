@@ -1,8 +1,8 @@
 package controllers;
 
+import controllers.managers.CollisionPool;
 import models.GameObject;
-import utils.Utils;
-import views.GameView;
+import views.SingleDrawer;
 
 /**
  * Created by apple on 10/9/16.
@@ -11,8 +11,8 @@ public class BulletController extends SingleController implements Contactable {
 
     public static final int SPEED = 10;
 
-    public BulletController(GameObject gameObject, GameView gameView) {
-        super(gameObject, gameView);
+    public BulletController(GameObject gameObject, SingleDrawer singleDrawer) {
+        super(gameObject, singleDrawer);
         CollisionPool.instance.register(this);
     }
 
@@ -25,9 +25,7 @@ public class BulletController extends SingleController implements Contactable {
     public void onCollide(Contactable contactable) {
         if(contactable instanceof EnemyPlaneController) {
             ((EnemyPlaneController) contactable).destroy();
-            ExplosionController explosionController = ExplosionController.create(gameObject.getX(), gameObject.getY());
-            ControllerManager.explosionManager.add(explosionController);
-            Utils.playSound("resources/explosion.wav", false);
+
         }
     }
 }

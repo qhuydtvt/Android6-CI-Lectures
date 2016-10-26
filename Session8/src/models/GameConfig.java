@@ -34,6 +34,10 @@ public class GameConfig {
         return screenWidth;
     }
 
+    public int getScreenMiddleX() {
+        return screenWidth / 2;
+    }
+
     public int getScreenHeight() {
         return screenHeight;
     }

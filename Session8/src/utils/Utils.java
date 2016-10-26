@@ -1,5 +1,7 @@
 package utils;
 
+import models.GameObject;
+
 import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import java.awt.*;
@@ -82,5 +84,19 @@ public class Utils {
             imageVector.add(image);
         }
         return imageVector;
+    }
+
+    public static double distance(int x1, int y1, int x2, int y2) {
+        int dx =  (x1 - x2);
+        int dy = (y1 - y2);
+
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public static double distance(GameObject gameObject1, GameObject gameObject2) {
+        return distance(gameObject1.getMiddleX(),
+                gameObject1.getMiddleY(),
+                gameObject2.getMiddleX(),
+                gameObject2.getMiddleY());
     }
 }

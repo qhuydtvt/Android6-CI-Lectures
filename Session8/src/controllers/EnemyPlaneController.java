@@ -1,17 +1,20 @@
 package controllers;
 
+import controllers.managers.CollisionPool;
+import controllers.managers.ControllerManager;
+import controllers.managers.NotificationCenter;
 import models.*;
 import utils.Utils;
 import views.AnimationDrawer;
 import views.GameDrawer;
-import views.GameView;
 
 import java.awt.*;
 
 /**
  * Created by apple on 10/11/16.
  */
-public class EnemyPlaneController extends SingleController implements Contactable {
+public class EnemyPlaneController extends SingleController
+        implements Contactable, Subcriber {
 
     private static final int SPEED = 1;
 
@@ -31,6 +34,7 @@ public class EnemyPlaneController extends SingleController implements Contactabl
 
         butletControllerManager = new ControllerManager();
         CollisionPool.instance.register(this);
+        NotificationCenter.instance.register(this);
     }
 
     @Override
@@ -39,8 +43,13 @@ public class EnemyPlaneController extends SingleController implements Contactabl
         butletControllerManager.draw(g);
     }
 
-
-
+    @Override
+    public void destroy() {
+        super.destroy();
+        ExplosionController explosionController = ExplosionController.create(gameObject.getX(), gameObject.getY());
+        ControllerManager.explosionManager.add(explosionController);
+        new Thread(() -> Utils.playSound("resources/explosion.wav", false)).start();
+    }
 
     @Override
     public void run() {
@@ -63,7 +72,7 @@ public class EnemyPlaneController extends SingleController implements Contactabl
             }
 //            EnemyBulletController bulletController = new EnemyBulletController(
 //                    new Bullet(gameObject.getMiddleX() - Bullet.BULLET_WIDTH / 2, gameObject.getBottom()),
-//                    new GameView(Utils.loadImageFromRes("enemy_bullet.png")
+//                    new SingleDrawer(Utils.loadImageFromRes("enemy_bullet.png")
 //                    ));
 //            butletControllerManager.add(bulletController);
         }
@@ -108,5 +117,16 @@ public class EnemyPlaneController extends SingleController implements Contactabl
                 animationDrawer,
                 flyBehavior,
                 shootBehavior);
+    }
+
+    static final int DAMAGE_RADIUS = 200;
+    @Override
+    public void onEvent(EventType eventType, SingleController singleController) {
+        if(eventType == EventType.BOMB_EXPLODE) {
+            double distance = Utils.distance(gameObject, singleController.getGameObject());
+            if(distance < DAMAGE_RADIUS) {
+                this.destroy();
+            }
+        }
     }
 }

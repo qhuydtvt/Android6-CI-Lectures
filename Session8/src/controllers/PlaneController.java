@@ -1,16 +1,16 @@
 package controllers;
 
+import controllers.managers.CollisionPool;
+import controllers.managers.ControllerManager;
 import models.Bullet;
 import models.GameConfig;
-import models.GameObject;
 import models.Plane;
 import utils.Utils;
-import views.GameView;
+import views.SingleDrawer;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
 
 /**
  * Created by asus on 10/9/2016.
@@ -24,8 +24,8 @@ public class PlaneController extends SingleController implements Contactable {
 
     private ControllerManager bulletControllers;
 
-    private PlaneController(Plane gameObject, GameView gameView) {
-        super(gameObject, gameView);
+    private PlaneController(Plane gameObject, SingleDrawer singleDrawer) {
+        super(gameObject, singleDrawer);
         bulletControllers = new ControllerManager();
         CollisionPool.instance.register(this);
     }
@@ -93,7 +93,7 @@ public class PlaneController extends SingleController implements Contactable {
     private void createBullet() {
         BulletController bulletController = new BulletController(
                 new Bullet(gameObject.getMiddleX(), gameObject.getY()),
-                new GameView(Utils.loadImageFromRes("bullet.png"))
+                new SingleDrawer(Utils.loadImageFromRes("bullet.png"))
         );
         bulletControllers.add(bulletController);
     }
@@ -118,12 +118,12 @@ public class PlaneController extends SingleController implements Contactable {
 
     public final static PlaneController planeController = new PlaneController(
                 new Plane(GameConfig.instance.getScreenWidth() / 2, GameConfig.instance.getScreenHeight() - Plane.PLANE_HEIGHT),
-                new GameView(Utils.loadImageFromRes("plane3.png"))
+                new SingleDrawer(Utils.loadImageFromRes("plane3.png"))
             );
 
     public final static PlaneController planeController2 = new PlaneController(
                 new Plane(GameConfig.instance.getScreenWidth()  / 2, GameConfig.instance.getScreenHeight() - Plane.PLANE_HEIGHT),
-                new GameView(Utils.loadImageFromRes("plane4.png"))
+                new SingleDrawer(Utils.loadImageFromRes("plane4.png"))
             );
 
     @Override

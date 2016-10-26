@@ -1,8 +1,8 @@
-package controllers;
+package controllers.managers;
 
+import controllers.EnemyPlaneController;
+import controllers.EnemyPlaneType;
 import models.EnemyPlane;
-import utils.Utils;
-import views.GameView;
 
 /**
  * Created by apple on 10/11/16.

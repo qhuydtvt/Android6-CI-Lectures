@@ -1,6 +1,7 @@
-package controllers;
+package controllers.managers;
 
-import models.GameConfig;
+import controllers.BaseController;
+import controllers.SingleController;
 import models.GameObject;
 
 import java.awt.*;

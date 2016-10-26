@@ -1,55 +1,40 @@
-import controllers.*;
+import controllers.Screens.LaunchScreen;
+import controllers.Screens.PlayGameScreen;
+import controllers.managers.*;
 import models.GameConfig;
-import models.Plane;
-import utils.Utils;
-import views.GameView;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.Stack;
 
 /**
  * Created by apple on 10/2/16.
  */
-public class GameWindow extends Frame implements Runnable {
+public class GameWindow extends Frame implements Runnable, ScreenManager {
 
-    Image backgroundImage = null;
     Image backBufferImage;
-
-    PlaneController planeController;
-    PlaneController planeController2;
-
     int backgroundWidth;
     int backgroundHeight;
 
-    private ControllerManager controllerManager;
+    private GameScreen currentGameScreen;
+    private Stack<GameScreen> screenStack;
 
     public GameWindow() {
+        screenStack = new Stack<>();
+
         backgroundWidth = GameConfig.instance.getScreenWidth();
         backgroundHeight = GameConfig.instance.getScreenHeight();
 
-        controllerManager = new ControllerManager();
-
-        planeController = PlaneController.planeController;
-        planeController2 = PlaneController.planeController2;
-
-        controllerManager.add(planeController);
-        controllerManager.add(planeController2);
-        controllerManager.add(new EnemyPlaneControllerManager());
-        controllerManager.add(CollisionPool.instance);
-        controllerManager.add(ControllerManager.explosionManager);
-
         backBufferImage = new BufferedImage(backgroundWidth,
                 backgroundHeight, BufferedImage.TYPE_INT_ARGB);
-
-
-        Image enemyPlaneImage = Utils.loadImageFromRes("plane1.png");
 
         this.setVisible(true);
         this.setSize(GameConfig.instance.getScreenWidth(),
                 GameConfig.instance.getScreenHeight());
 
         this.addWindowListener(new WindowListener() {
+
             @Override
             public void windowOpened(WindowEvent e) {
                 System.out.println("windowOpened");
@@ -87,65 +72,26 @@ public class GameWindow extends Frame implements Runnable {
             }
         });
 
-        this.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                planeController2.mouseClicked(e);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-
-        this.addMouseMotionListener(new MouseMotionListener() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                planeController2.mouseMoved(e);
-            }
-        });
+        change(new LaunchScreen(this), false);
 
         this.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                System.out.println("keyTyped");
+
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
-                System.out.println("keyPressed");
-                planeController.keyPressed(e);
+                if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                    back();
+                }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                planeController.keyReleased(e);
-                System.out.println("keyReleased");
+
             }
         });
-
-        backgroundImage = Utils.loadImageFromRes("background.png");
     }
 
     @Override
@@ -159,11 +105,7 @@ public class GameWindow extends Frame implements Runnable {
 
         Graphics backBufferGraphics = backBufferImage.getGraphics();
 
-        backBufferGraphics.drawImage(backgroundImage,
-                0, 0,
-                backgroundWidth, backgroundHeight, null);
-
-        controllerManager.draw(backBufferGraphics);
+        currentGameScreen.update(backBufferGraphics);
 
         g.drawImage(backBufferImage,
                 0, 0,
@@ -178,10 +120,44 @@ public class GameWindow extends Frame implements Runnable {
                         .instance
                         .getThreadDelayInMiliseconds());
                 repaint();
-                controllerManager.run();
+                currentGameScreen.run();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void change(GameScreen newGameScreen, boolean addToBackstack) {
+        if(currentGameScreen != null) {
+            this.detach(currentGameScreen);
+        }
+
+        if(addToBackstack && currentGameScreen != null) {
+            screenStack.push(currentGameScreen);
+        }
+
+        this.attach(newGameScreen);
+    }
+
+    public void back() {
+        if(screenStack.size() > 0) {
+            GameScreen newGameScreen = screenStack.pop();
+            detach(currentGameScreen);
+            attach(newGameScreen);
+        }
+    }
+
+    private void attach(GameScreen newGameScreen) {
+        this.currentGameScreen = newGameScreen;
+        this.addMouseListener(newGameScreen);
+        this.addMouseMotionListener(newGameScreen);
+        this.addKeyListener(newGameScreen);
+    }
+
+    private void detach(GameScreen oldGameScreen) {
+        this.removeKeyListener(oldGameScreen);
+        this.removeMouseListener(oldGameScreen);
+        this.removeMouseMotionListener(oldGameScreen);
     }
 }

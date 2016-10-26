@@ -1,5 +1,7 @@
-package controllers;
+package controllers.managers;
 
+import controllers.BaseController;
+import controllers.Contactable;
 import models.GameObject;
 
 import java.awt.*;

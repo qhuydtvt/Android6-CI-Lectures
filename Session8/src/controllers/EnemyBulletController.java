@@ -1,9 +1,9 @@
 package controllers;
 
+import controllers.managers.CollisionPool;
 import models.EnemyBullet;
-import models.GameObject;
 import utils.Utils;
-import views.GameView;
+import views.SingleDrawer;
 
 /**
  * Created by apple on 10/16/16.
@@ -13,8 +13,8 @@ public class EnemyBulletController extends SingleController implements Contactab
 
     private FlyBehavior flyBehavior;
 
-    public EnemyBulletController(EnemyBullet gameObject, GameView gameView, FlyBehavior flyBehavior) {
-        super(gameObject, gameView);
+    public EnemyBulletController(EnemyBullet gameObject, SingleDrawer singleDrawer, FlyBehavior flyBehavior) {
+        super(gameObject, singleDrawer);
         this.flyBehavior = flyBehavior;
         CollisionPool.instance.register(this);
     }
@@ -42,7 +42,7 @@ public class EnemyBulletController extends SingleController implements Contactab
         EnemyBulletController enemyBulletController =
                 new EnemyBulletController(
                     new EnemyBullet(x, y),
-                    new GameView(Utils.loadImageFromRes(image)),
+                    new SingleDrawer(Utils.loadImageFromRes(image)),
                     flyBehavior
                 );
 
